@@ -1,10 +1,15 @@
+#include <map>
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-#include <ESP8266WiFiMulti.h>
 #include <WiFiClient.h>
 #include <ESP8266HTTPClient.h>
+#include <Adafruit_CCS811.h>
+#include <Adafruit_SHT31.h>
 
 #define ONBOARD_LED_PIN 5
+#define ANALOG_PIN A0
+#define OUTDOOR_BUTTON_PIN 12
+#define INDOOR_BUTTON_PIN 13
 #define REQUEST_INTERVAL 10000
 
 const char* WifiSsid = "UCInet Mobile Access";
@@ -13,8 +18,11 @@ const char* WifiPsk = "";
 //const char* WifiSsid = "ZP-iPhone7";
 //const char* WifiPsk = "zpwobaba";
 
-ESP8266WiFiMulti WiFiMulti;
+Adafruit_CCS811 ccs;
+Adafruit_SHT31 sht = Adafruit_SHT31();
+
 unsigned long last_request_time;
+int env_mode = 0;
 
 void connectWifi () {
   byte ledStatus = LOW;
@@ -36,11 +44,39 @@ void connectWifi () {
   last_request_time = millis();
 }
 
+std::map<String, String> getReadings () {
+  std::map<String, String> readings;
+  readings["gas"] = String(analogRead(ANALOG_PIN));
+  if (ccs.available()) {
+    readings["co2"] = String(ccs.geteCO2());
+    readings["tvoc"] = String(ccs.getTVOC());
+  }
+  float t = sht.readTemperature();
+  float h = sht.readHumidity();
+  if (!isnan(t)) {
+    readings["temp"] = String(t);
+  }
+  if (!isnan(h)) {
+    readings["humidity"] = String(h);
+  }
+  return readings;
+}
+
+String prepareQueryString (std::map<String, String>& data) {
+  String query = "http://192.168.1.72:8080/portal?mac=" + String(WiFi.macAddress());
+  query += "&mode=" + String(env_mode);
+  for (auto entry : data) {
+    query += "&" + entry.first + "=" + entry.second;
+  }
+  return query;
+}
+
 void sendGetRequest () {
   WiFiClient client;
   HTTPClient http;
   Serial.print("[HTTP] begin...\n");
-  if (http.begin(client, "http://192.168.1.72:8080/portal")) {
+  auto readings = getReadings();
+  if (http.begin(client, prepareQueryString(readings))) {
     Serial.print("[HTTP] GET...\n");
     int httpCode = http.GET();
     if (httpCode > 0) {
@@ -60,28 +96,36 @@ void sendGetRequest () {
 
 void setup() {
   Serial.begin(115200);
+  ccs.begin();
+  sht.begin();
+  pinMode(ANALOG_PIN, INPUT);
+  pinMode(OUTDOOR_BUTTON_PIN, INPUT);
+  pinMode(INDOOR_BUTTON_PIN, INPUT);
   pinMode(ONBOARD_LED_PIN, OUTPUT);
   digitalWrite(ONBOARD_LED_PIN,LOW);
 }
 
 void loop() {
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.print("Wifi disconnected! Connecting...");
-    Serial.println(millis());
-    connectWifi();
-  } else {
-    Serial.print("Wifi connected at ");
-    Serial.print(WiFi.localIP());
-    Serial.print(" time ");
-    Serial.println(millis());
-    digitalWrite(ONBOARD_LED_PIN, HIGH);
-    if (millis() - last_request_time >= REQUEST_INTERVAL) {
-      digitalWrite(ONBOARD_LED_PIN, LOW);
-      sendGetRequest();
-      last_request_time = millis();
-      delay(1000);
-      digitalWrite(ONBOARD_LED_PIN, HIGH);
-    }
+  if (digitalRead(INDOOR_BUTTON_PIN) == HIGH) {
+    env_mode = 0;  
   }
-  delay(1000);
+  if (digitalRead(OUTDOOR_BUTTON_PIN) == HIGH) {
+    env_mode = 1;  
+  }
+  if (millis() - last_request_time >= REQUEST_INTERVAL) {
+    digitalWrite(ONBOARD_LED_PIN, LOW);
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.print("Wifi disconnected! Connecting...");
+      Serial.println(millis());
+      connectWifi();
+    } else {
+      Serial.print("Wifi connected at ");
+      Serial.print(WiFi.localIP());
+      Serial.print(" time ");
+      Serial.println(millis());
+      sendGetRequest();
+    }
+    digitalWrite(ONBOARD_LED_PIN, LOW);
+    last_request_time = millis();
+  }
 }
