@@ -32,26 +32,17 @@ app.get('/record', (req, res, next) => {
 });
 
 app.get('/portal', (req, res, next) => {
-    console.log(req.query);
-
-    // Find max device number (for new device id use)
-    Device.find().sort({id:-1}).limit(1).exec().then((maxDevice) => {
-        var newId = 0;
-        if (maxDevice.length == 0) {
-            var firstDevice = new Device({id:0, mac:"FF:FF:FF:FF:FF:FF"});
-            firstDevice.save();
-        } else {
-            newId = maxDevice[0].id;
-        }
+    // Find number of devices (for new device id use)
+    Device.count((err, cnt) => {
         // Find device id from db and insert records value
-        // Add device to db if not found
+        // Add device id to db if not found
         Device.find({'mac':req.query.mac}).limit(1).exec().then((entry) => {
-            var deviceId = newId + 1;
+            var deviceId = cnt + 1;
             if (entry.length == 0) {
                 var newDevice = new Device({id:deviceId, mac:req.query.mac});
                 newDevice.save();
             } else {
-                deviceId = entry.query.id;
+                deviceId = entry[0].id;
             }
             // insert reading data to db
             var data = new Record({
@@ -62,8 +53,9 @@ app.get('/portal', (req, res, next) => {
                 co2: req.query.co2,
                 tvoc: req.query.tvoc,
                 temp: req.query.temp,
-                Humidity: req.query.humidity
+                humidity: req.query.humidity
             });
+            console.log(JSON.stringify(data));
             data.save();
         });
     });
