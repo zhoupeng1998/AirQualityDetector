@@ -23,12 +23,27 @@ app.get('/device', (req, res, next) => {
 });
 
 app.get('/record', (req, res, next) => {
-    Record.find((err, entry) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    Record.find().sort({time:-1})/*.limit(50)*/.exec((err, entry) => {
         if (err) {
-            return console.error(err);
+            return console.err(err);
         }
-        res.json(entry);
-    })
+        timeline = new Array();
+        humidity_a = new Array();
+        temperature_a = new Array();
+        gas_a = new Array();
+        co2_a = new Array();
+        tvoc_a = new Array();
+        entry.forEach(obj => {
+            timeline.push(obj.time);
+            humidity_a.push(obj.humidity);
+            temperature_a.push(obj.temp);
+            gas_a.push(obj.gas);
+            co2_a.push(obj.co2);
+            tvoc_a.push(obj.tvoc);
+        })
+        res.json({time: timeline, humidity: humidity_a, temperature: temperature_a});
+    });
 });
 
 app.get('/portal', (req, res, next) => {
@@ -63,4 +78,4 @@ app.get('/portal', (req, res, next) => {
     res.send(JSON.stringify(req.query));
 });
 
-app.listen(3000);
+app.listen(8080);
