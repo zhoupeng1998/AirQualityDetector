@@ -8,7 +8,9 @@ const recordSchema = new mongoose.Schema({
     co2: Number,
     tvoc: Number,
     temp: Number,
-    humidity: Number
+    humidity: Number,
+    lon: Number,
+    lat: Number
 });
 
 module.exports = mongoose.model('Record', recordSchema);

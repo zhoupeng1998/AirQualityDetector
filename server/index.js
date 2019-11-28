@@ -22,6 +22,20 @@ app.get('/device', (req, res, next) => {
     });
 });
 
+app.get('/raw', (req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    Record.find().sort({time:-1}).exec((err, entry) => {
+        res.json(entry);
+    });
+});
+
+app.get('/latest', (req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    Record.find().sort({time:-1}).limit(1).exec((err, entry) => {
+        res.json(entry);
+    });
+})
+
 app.get('/record', (req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     Record.find().sort({time:-1})/*.limit(50)*/.exec((err, entry) => {
@@ -42,7 +56,8 @@ app.get('/record', (req, res, next) => {
             co2_a.push(obj.co2);
             tvoc_a.push(obj.tvoc);
         })
-        res.json({time: timeline, humidity: humidity_a, temperature: temperature_a});
+        res.json({time: timeline, humidity: humidity_a, temperature: temperature_a, 
+            gas: gas_a, co2: co2_a, tvoc: tvoc_a});
     });
 });
 
@@ -68,7 +83,9 @@ app.get('/portal', (req, res, next) => {
                 co2: req.query.co2,
                 tvoc: req.query.tvoc,
                 temp: req.query.temp,
-                humidity: req.query.humidity
+                humidity: req.query.humidity,
+                lon: req.body.lon,
+                lat: req.body.lat
             });
             console.log(JSON.stringify(data));
             data.save();
