@@ -84,8 +84,8 @@ app.get('/portal', (req, res, next) => {
                 tvoc: req.query.tvoc,
                 temp: req.query.temp,
                 humidity: req.query.humidity,
-                lon: req.body.lon,
-                lat: req.body.lat
+                lon: req.query.lon,
+                lat: req.query.lat
             });
             console.log(JSON.stringify(data));
             data.save();
