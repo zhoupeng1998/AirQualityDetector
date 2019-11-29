@@ -40,7 +40,7 @@ const HomepageHeading = () => (
       style={{
         fontSize:  '4em',
         fontWeight: 'normal',
-        marginBottom: 0,
+        marginBottom: '1em',
         marginTop:  '3em',
       }}
     />
@@ -52,12 +52,10 @@ const HomepageHeading = () => (
         fontSize: '2em',
         fontWeight: 'normal',
         marginTop:  '0.7em',
+        marginBottom: '2em',
       }}
     />
-    <Button primary size='huge'>
-      Show Graph
-      <Icon name='right arrow' />
-    </Button>
+
   </Container>
 )
 
@@ -105,7 +103,13 @@ class DesktopContainer extends Component {
 
               </Container>
             </Menu>
-            <HomepageHeading />
+            <HomepageHeading/>
+
+            <Button primary size='massive' as={Link} to='/history'>
+              Show Graph
+              <Icon name='right arrow' />
+            </Button>
+
           </Segment>
         </Visibility>
 
@@ -206,5 +210,20 @@ const HomepageLayout = () => (
   </ResponsiveContainer>
 
 )
+const ohterHeading =() => (
+  <Segment
+  inverted
+  textAlign='center'
 
-export default HomepageLayout
+  style={{ minHeight: 300, marginBottom:'1em'}}
+  vertical
+  >
+    <HomepageHeading/>
+      <Button  primary size='massive' as={Link} to='/' >
+          Home
+      
+      </Button> 
+  </Segment>
+) 
+
+export {HomepageLayout,getWidth,ohterHeading};

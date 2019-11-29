@@ -2,7 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { Container } from 'semantic-ui-react';
-import Home from './HomePage';
+import {HomepageLayout as Home} from './pages/HomePage';
 
 /*
 function App() {
@@ -33,4 +33,4 @@ const App = () => (
 );
 
 
-export default App;
+//export default App;

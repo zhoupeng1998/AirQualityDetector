@@ -15,7 +15,7 @@ class HistoryChart extends Component {
 
     componentDidMount () {
         var _this = this;
-        axios.get('http://localhost:8080/record').then((res) => {
+        axios.get('http://13.57.9.33:8080/record').then((res) => {
             _this.setState({time: res.data.time.reverse()});
             _this.setState({temperature: res.data.temperature.reverse()});
             _this.setState({humidity: res.data.humidity.reverse()});

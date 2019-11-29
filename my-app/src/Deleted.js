@@ -205,4 +205,4 @@ const HomepageLayout = () => (
 
 )
 
-export default HomepageLayout
+export {HomepageLayout, Heading}
