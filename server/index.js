@@ -10,6 +10,20 @@ mongoose.connect(url, {useNewUrlParser: true});
 
 var app = express();
 
+const getFilter = (query) => {
+    var filter = {};
+    if (query.week == '10') {
+        filter['time'] = {$gte: '2019-12-01'};
+    } else if (query.week == '9') {
+        filter['time'] = {$lte: '2019-12-01'};
+    }
+    // filter mode
+    if (query.mode == '1' || query.mode == '2') {
+        filter['mode'] = query.mode;
+    }
+    return filter;
+};
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
@@ -38,7 +52,7 @@ app.get('/latest', (req, res, next) => {
 
 app.get('/record', (req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    Record.find().sort({time:-1})/*.limit(50)*/.exec((err, entry) => {
+    Record.find(getFilter(req.query)).sort({time:-1}).limit(Number(req.query.limit)).exec((err, entry) => {
         if (err) {
             return console.err(err);
         }
@@ -49,7 +63,7 @@ app.get('/record', (req, res, next) => {
         co2_a = new Array();
         tvoc_a = new Array();
         entry.forEach(obj => {
-            timeline.push(obj.time);
+            timeline.push(sd.format(obj.time, "YYYY-MM-DD HH:mm:ss"));
             humidity_a.push(obj.humidity);
             temperature_a.push(obj.temp);
             gas_a.push(obj.gas);
@@ -75,10 +89,11 @@ app.get('/portal', (req, res, next) => {
                 deviceId = entry[0].id;
             }
             // insert reading data to db
+            const time = new Date();
             var data = new Record({
                 id: deviceId,
                 ip: req.ip,
-                time: sd.format(new Date(), "YYYY-MM-DD HH:mm:ss"),
+                mode: req.query.mode,
                 gas: req.query.gas,
                 co2: req.query.co2,
                 tvoc: req.query.tvoc,

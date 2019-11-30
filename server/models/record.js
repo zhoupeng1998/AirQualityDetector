@@ -3,7 +3,8 @@ const mongoose = require('mongoose')
 const recordSchema = new mongoose.Schema({
     id: Number,
     ip: String,
-    time: String,
+    mode: Number,
+    time: {type: Date, default: Date.now},
     gas: Number,
     co2: Number,
     tvoc: Number,

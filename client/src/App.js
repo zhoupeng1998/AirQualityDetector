@@ -3,7 +3,10 @@ import {BrowserRouter as Router, Route, Switch, Link, Redirect} from "react-rout
 
 import MainPage from './pages/index';
 import HistoryChart from "./pages/history";
-import RawData from "./pages/raw";
+
+
+import RealTimeData from './pages/realtime';
+
 
 class App extends Component {
 
@@ -13,7 +16,9 @@ class App extends Component {
                 <Switch>
                     <Route exact path='/' component={MainPage} />
                     <Route exact path='/history' component={HistoryChart} />
-                    <Route exact path='/raw' component={RawData} />
+
+                    <Route exact path='/realtime' component={RealTimeData} />
+
                 </Switch>
             </Router>
         );
