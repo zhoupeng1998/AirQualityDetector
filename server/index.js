@@ -24,6 +24,14 @@ const getFilter = (query) => {
     return filter;
 };
 
+const getAverage = (array) => {
+    var sum = 0.0;
+    for (var i = 0; i < array.length; i++) {
+        sum += array[i];
+    }
+    return String(sum / array.length);
+};
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
@@ -71,7 +79,13 @@ app.get('/record', (req, res, next) => {
             tvoc_a.push(obj.tvoc);
         })
         res.json({time: timeline, humidity: humidity_a, temperature: temperature_a, 
-            gas: gas_a, co2: co2_a, tvoc: tvoc_a});
+            gas: gas_a, co2: co2_a, tvoc: tvoc_a, 
+            avg_humidity: getAverage(humidity_a),
+            avg_temperature: getAverage(temperature_a),
+            avg_gas: getAverage(gas_a),
+            avg_co2: getAverage(co2_a),
+            avg_tvoc: getAverage(tvoc_a)
+        });
     });
 });
 

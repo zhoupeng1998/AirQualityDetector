@@ -3,26 +3,33 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266HTTPClient.h>
-#include <Adafruit_CCS811.h>
 #include <Adafruit_SHT31.h>
+#include <ccs811.h>
+#include <Adafruit_GPS.h>
+#include <SoftwareSerial.h>
 
 #define ONBOARD_LED_PIN 5
 #define ANALOG_PIN A0
-#define OUTDOOR_BUTTON_PIN 12
-#define INDOOR_BUTTON_PIN 13
-#define REQUEST_INTERVAL 10000
+
+#define INDOOR_MODE 0
+#define OUTDOOR_MODE 1
+
+#define REQUEST_INTERVAL 4000
+#define GPSECHO false
 
 const char* WifiSsid = "UCInet Mobile Access";
 const char* WifiPsk = "";
 
-//const char* WifiSsid = "ZP-iPhone7";
-//const char* WifiPsk = "zpwobaba";
+SoftwareSerial mySerial(13, 12);
 
-Adafruit_CCS811 ccs;
+CCS811 ccs(3);
 Adafruit_SHT31 sht = Adafruit_SHT31();
+Adafruit_GPS GPS(&mySerial);
 
 unsigned long last_request_time;
+uint16_t eco2, etvoc, errstat, raw;
 int env_mode = 0;
+float lon = 0.0, lat = 0.0;
 
 void connectWifi () {
   byte ledStatus = LOW;
@@ -46,11 +53,14 @@ void connectWifi () {
 
 std::map<String, String> getReadings () {
   std::map<String, String> readings;
+  ccs.read(&eco2,&etvoc,&errstat,&raw); 
   readings["gas"] = String(analogRead(ANALOG_PIN));
-  if (ccs.available()) {
-    readings["co2"] = String(ccs.geteCO2());
-    readings["tvoc"] = String(ccs.getTVOC());
+  // CCS data
+  if (errstat==CCS811_ERRSTAT_OK) {
+    readings["co2"] = String(eco2);
+    readings["tvoc"] = String(etvoc);
   }
+  // SHT data
   float t = sht.readTemperature();
   float h = sht.readHumidity();
   if (!isnan(t)) {
@@ -59,23 +69,42 @@ std::map<String, String> getReadings () {
   if (!isnan(h)) {
     readings["humidity"] = String(h);
   }
+  // GPS data
+  if (GPS.fix) {
+    env_mode = OUTDOOR_MODE;
+    lat = GPS.latitude;
+    if (GPS.lat == 'S') {
+      lat *= -1;  
+    }
+    lon = GPS.longitude;
+    if (GPS.lon == 'W') {
+      lon *= -1;  
+    }
+  } else {
+    env_mode = INDOOR_MODE;  
+  }
+  readings["lat"] = String(lat, 4);
+  readings["lon"] = String(lon, 4);
   return readings;
 }
 
 String prepareQueryString (std::map<String, String>& data) {
-  String query = "http://192.168.1.72:8080/portal?mac=" + String(WiFi.macAddress());
+  String query = "http://13.57.9.33:8080/portal?mac=" + String(WiFi.macAddress());
   query += "&mode=" + String(env_mode);
   for (auto entry : data) {
     query += "&" + entry.first + "=" + entry.second;
   }
+  Serial.println(query);
   return query;
 }
 
 void sendGetRequest () {
   WiFiClient client;
   HTTPClient http;
-  Serial.print("[HTTP] begin...\n");
+  //Serial.print("[HTTP] begin...\n");
   auto readings = getReadings();
+  prepareQueryString(readings);
+  
   if (http.begin(client, prepareQueryString(readings))) {
     Serial.print("[HTTP] GET...\n");
     int httpCode = http.GET();
@@ -92,25 +121,39 @@ void sendGetRequest () {
   } else {
     Serial.printf("[HTTP} Unable to connect\n");
   }
+  
 }
 
 void setup() {
   Serial.begin(115200);
-  ccs.begin();
+  Wire.begin();
+  Serial.println("HARDWARE RESTART");
+  // Start CCS811, SHT31
+  ccs.set_i2cdelay(50);
+  bool beg = ccs.begin();
+  bool sta = ccs.start(CCS811_MODE_1SEC);
+  if (!beg || !sta) {
+    Serial.println("Couldn't find CCS811");  
+  }
   sht.begin();
+  // Start GPS
+  GPS.begin(9600);
+  GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
+  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
+  GPS.sendCommand(PGCMD_ANTENNA);
+  // Start Pins
   pinMode(ANALOG_PIN, INPUT);
-  pinMode(OUTDOOR_BUTTON_PIN, INPUT);
-  pinMode(INDOOR_BUTTON_PIN, INPUT);
   pinMode(ONBOARD_LED_PIN, OUTPUT);
   digitalWrite(ONBOARD_LED_PIN,LOW);
 }
 
 void loop() {
-  if (digitalRead(INDOOR_BUTTON_PIN) == HIGH) {
-    env_mode = 0;  
-  }
-  if (digitalRead(OUTDOOR_BUTTON_PIN) == HIGH) {
-    env_mode = 1;  
+  char c = GPS.read();
+  if ((c) && (GPSECHO))
+    Serial.write(c);
+  if (GPS.newNMEAreceived()) {
+    if (!GPS.parse(GPS.lastNMEA()))
+      return;
   }
   if (millis() - last_request_time >= REQUEST_INTERVAL) {
     digitalWrite(ONBOARD_LED_PIN, LOW);
@@ -128,4 +171,5 @@ void loop() {
     digitalWrite(ONBOARD_LED_PIN, LOW);
     last_request_time = millis();
   }
+  //delay(100);
 }
