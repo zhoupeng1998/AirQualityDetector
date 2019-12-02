@@ -150,6 +150,14 @@ class HistoryChart extends Component {
 
         return (
             <div>
+
+                <div>
+                    <a href='/'>Home</a>&nbsp;&nbsp;
+                    <a href='/history'>Plot</a>&nbsp;&nbsp;
+                    <a href='/realtime'>Realtime</a>&nbsp;&nbsp;
+                    <a href='/analysis'>Analysis</a><br /><br />
+                </div>
+
                 <div>
                     Mode:&nbsp;&nbsp;&nbsp;
                     <label>
@@ -204,7 +212,7 @@ class HistoryChart extends Component {
                         <input type="radio" name="limit" value='All' onChange={this.handleLimitChange}/>All
                     </label><br />
                 </div>
-                <button onClick={this.handleClick}>Go</button>
+                <button onClick={this.handleClick}>Go</button><br /><br />
 
                 <LineChart data={tempHumidChart} options={tempHumidOptions} width='1000' height='500' />
                 <LineChart data={co2TvocChart} options={co2TvocOptions} width='1000' height='500' />

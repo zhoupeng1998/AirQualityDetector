@@ -40,7 +40,14 @@ class RealTimeData extends Component {
 
     render () {
         return (
+
             <div>
+                <div>
+                    <a href='/'>Home</a>&nbsp;&nbsp;
+                    <a href='/history'>Plot</a>&nbsp;&nbsp;
+                    <a href='/realtime'>Realtime</a>&nbsp;&nbsp;
+                    <a href='/analysis'>Analysis</a><br /><br />
+                </div>
                 <p>Device ID: {this.state.id}</p>
                 <p>Mode: {this.state.mode}</p>
                 <p>Time: {this.state.time} UTC</p>

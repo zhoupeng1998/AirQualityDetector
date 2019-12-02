@@ -80,7 +80,13 @@ class Analysis extends Component {
 
         return (
             <div class='ui list'>
-                
+                <div>
+                    <a href='/'>Home</a>&nbsp;&nbsp;
+                    <a href='/history'>Plot</a>&nbsp;&nbsp;
+                    <a href='/realtime'>Realtime</a>&nbsp;&nbsp;
+                    <a href='/analysis'>Analysis</a><br /><br />
+                </div>
+
                 <div>
                     Mode:&nbsp;&nbsp;&nbsp;
                     <label>
@@ -119,7 +125,7 @@ class Analysis extends Component {
                         <input type="radio" name="location" value='All' onChange={this.handleLocationChange}/>All
                     </label><br />
                 </div>
-                <Button onClick={this.handleClick}>Go</Button>
+                <Button onClick={this.handleClick}>Go</Button><br /><br />
                 
                 <div class='item'>Max Temperature: {maxTemp}ºC</div >
                 <div class='item'>Min Temperature: {minTemp}ºC</div >
