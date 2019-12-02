@@ -12,14 +12,23 @@ var app = express();
 
 const getFilter = (query) => {
     var filter = {};
+    // filter time
     if (query.week == '10') {
-        filter['time'] = {$gte: '2019-12-01'};
+        filter['time'] = {$gte: '2019-12-02'};
     } else if (query.week == '9') {
         filter['time'] = {$lte: '2019-12-01'};
     }
     // filter mode
     if (query.mode == '0' || query.mode == '1') {
         filter['mode'] = query.mode;
+    }
+    // filter location
+    if (query.location == 'on') {
+        filter['lon'] = {$gt: -11751, $lt: -11750};
+        filter['lat'] = {$gt: 3338, $lt: 3339.1};
+    } else if (query.location == 'off') {
+        filter['$or'] = [{lon: {$lte: -11751}}, {lon: {$gte: 11750}}, 
+            {lat: {$lte: 3338}}, {lat: {$gte: 3339.1}}];
     }
     return filter;
 };
@@ -54,7 +63,9 @@ app.get('/raw', (req, res, next) => {
 app.get('/latest', (req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     Record.find().sort({time:-1}).limit(1).exec((err, entry) => {
-        res.json(entry);
+        var result = JSON.parse(JSON.stringify(entry));
+        result[0].time_str = sd.format(result[0].time, "YYYY-MM-DD HH:mm:ss");
+        res.json(result);
     });
 })
 

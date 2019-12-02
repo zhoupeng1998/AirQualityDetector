@@ -10,13 +10,14 @@ class HistoryChart extends Component {
         co2: [],
         tvoc: [],
         gas: [],
-        mode: 'All', week: 'All', limit: 'All'
+        mode: 'All', week: 'All', location: 'All', limit: 'All'
     }
 
     constructor () {
         super()
         this.handleModeChange = this.handleModeChange.bind(this);
         this.handleWeekChange = this.handleWeekChange.bind(this);
+        this.handleLocationChange = this.handleLocationChange.bind(this);
         this.handleLimitChange = this.handleLimitChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
     }
@@ -43,6 +44,10 @@ class HistoryChart extends Component {
         this.setState({week: event.target.value});
     }
 
+    handleLocationChange (event) {
+        this.setState({location: event.target.value});
+    }
+
     handleLimitChange (event) {
         this.setState({limit: event.target.value});
     }
@@ -54,6 +59,9 @@ class HistoryChart extends Component {
         }
         if (this.state.week == '9' || this.state.week == '10') {
             href += 'week=' + this.state.week + '&';
+        }
+        if (this.state.location != 'All') {
+            href += 'location=' + this.state.location + '&';
         }
         if (this.state.limit != 'All') {
             href += 'limit=' + this.state.limit;
@@ -169,18 +177,31 @@ class HistoryChart extends Component {
                 </div>
 
                 <div>
+                    Location:&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="location" value='on' onChange={this.handleLocationChange}/>On Campus
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="location" value='off' onChange={this.handleLocationChange}/>Off Campus
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="location" value='All' onChange={this.handleLocationChange}/>All
+                    </label><br />
+                </div>
+
+                <div>
                     Limit:&nbsp;&nbsp;&nbsp;
                     <label>
-                        <input type="radio" name="week" value='20' onChange={this.handleLimitChange}/>20
+                        <input type="radio" name="limit" value='20' onChange={this.handleLimitChange}/>20
                     </label>&nbsp;&nbsp;&nbsp;
                     <label>
-                        <input type="radio" name="week" value='50' onChange={this.handleLimitChange}/>50
+                        <input type="radio" name="limit" value='50' onChange={this.handleLimitChange}/>50
                     </label>&nbsp;&nbsp;&nbsp;
                     <label>
-                        <input type="radio" name="week" value='100' onChange={this.handleLimitChange}/>100
+                        <input type="radio" name="limit" value='100' onChange={this.handleLimitChange}/>100
                     </label>&nbsp;&nbsp;&nbsp;
                     <label>
-                        <input type="radio" name="week" value='All' onChange={this.handleLimitChange}/>All
+                        <input type="radio" name="limit" value='All' onChange={this.handleLimitChange}/>All
                     </label><br />
                 </div>
                 <button onClick={this.handleClick}>Go</button>

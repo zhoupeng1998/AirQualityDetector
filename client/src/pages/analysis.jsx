@@ -10,13 +10,14 @@ class Analysis extends Component {
         gas:[], avg_gas:'',
         co2:[], avg_co2:'',
         tvoc:[], avg_tvoc:'',
-        mode: 'All', week: 'All'
+        mode: 'All', week: 'All', location: 'All'
     }
 
     constructor (props) {
         super(props);
         this.handleModeChange = this.handleModeChange.bind(this);
         this.handleWeekChange = this.handleWeekChange.bind(this);
+        this.handleLocationChange = this.handleLocationChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
     }
 
@@ -28,6 +29,10 @@ class Analysis extends Component {
         this.setState({week: event.target.value});
     }
 
+    handleLocationChange (event) {
+        this.setState({location: event.target.value});
+    }
+
     handleClick (event) {
         var href = '/analysis?';
         if (this.state.mode == '0' || this.state.mode == '1') {
@@ -35,6 +40,9 @@ class Analysis extends Component {
         }
         if (this.state.week == '9' || this.state.week == '10') {
             href += 'week=' + this.state.week + '&';
+        }
+        if (this.state.location != 'All') {
+            href += 'location=' + this.state.location + '&';
         }
         window.location.href = href;
     }
@@ -96,6 +104,19 @@ class Analysis extends Component {
                     </label>&nbsp;&nbsp;&nbsp;
                     <label>
                         <input type="radio" name="week" value='All' onChange={this.handleWeekChange}/>All
+                    </label><br />
+                </div>
+
+                <div>
+                    Location:&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="location" value='on' onChange={this.handleLocationChange}/>On Campus
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="location" value='off' onChange={this.handleLocationChange}/>Off Campus
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="location" value='All' onChange={this.handleLocationChange}/>All
                     </label><br />
                 </div>
                 <Button onClick={this.handleClick}>Go</Button>
