@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {List} from 'semantic-ui-react';
+import {List, Label, Input, Button} from 'semantic-ui-react';
 
 class Analysis extends Component {
 
@@ -9,7 +9,34 @@ class Analysis extends Component {
         temp: [], avg_temp:'',
         gas:[], avg_gas:'',
         co2:[], avg_co2:'',
-        tvoc:[], avg_tvoc:''
+        tvoc:[], avg_tvoc:'',
+        mode: 'All', week: 'All'
+    }
+
+    constructor (props) {
+        super(props);
+        this.handleModeChange = this.handleModeChange.bind(this);
+        this.handleWeekChange = this.handleWeekChange.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleModeChange (event) {
+        this.setState({mode: event.target.value});
+    }
+
+    handleWeekChange (event) {
+        this.setState({week: event.target.value});
+    }
+
+    handleClick (event) {
+        var href = '/analysis?';
+        if (this.state.mode == '0' || this.state.mode == '1') {
+            href += 'mode=' + this.state.mode + '&';
+        }
+        if (this.state.week == '9' || this.state.week == '10') {
+            href += 'week=' + this.state.week + '&';
+        }
+        window.location.href = href;
     }
 
     componentDidMount () {
@@ -45,6 +72,34 @@ class Analysis extends Component {
 
         return (
             <div class='ui list'>
+                
+                <div>
+                    Mode:&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="mode" value='0' onChange={this.handleModeChange}/>Indoors
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="mode" value='1' onChange={this.handleModeChange}/>Outdoors
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="mode" value='All' onChange={this.handleModeChange}/>All
+                    </label><br />
+                </div>
+                
+                <div>
+                    Week:&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="week" value='9' onChange={this.handleWeekChange}/>Week 9
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="week" value='10' onChange={this.handleWeekChange}/>Week 10
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="week" value='All' onChange={this.handleWeekChange}/>All
+                    </label><br />
+                </div>
+                <Button onClick={this.handleClick}>Go</Button>
+                
                 <div class='item'>Max Temperature: {maxTemp}ºC</div >
                 <div class='item'>Min Temperature: {minTemp}ºC</div >
                 <div class='item'>Average Temperature: {avgTemp}ºC</div >

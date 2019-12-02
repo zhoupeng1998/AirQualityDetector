@@ -18,7 +18,7 @@ const getFilter = (query) => {
         filter['time'] = {$lte: '2019-12-01'};
     }
     // filter mode
-    if (query.mode == '1' || query.mode == '2') {
+    if (query.mode == '0' || query.mode == '1') {
         filter['mode'] = query.mode;
     }
     return filter;
@@ -46,7 +46,7 @@ app.get('/device', (req, res, next) => {
 
 app.get('/raw', (req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    Record.find().sort({time:-1}).exec((err, entry) => {
+    Record.find(getFilter(req.query)).sort({time:-1}).exec((err, entry) => {
         res.json(entry);
     });
 });

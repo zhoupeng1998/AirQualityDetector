@@ -9,11 +9,16 @@ class HistoryChart extends Component {
         humidity: [],
         co2: [],
         tvoc: [],
-        gas: []
+        gas: [],
+        mode: 'All', week: 'All', limit: 'All'
     }
 
     constructor () {
         super()
+        this.handleModeChange = this.handleModeChange.bind(this);
+        this.handleWeekChange = this.handleWeekChange.bind(this);
+        this.handleLimitChange = this.handleLimitChange.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     componentDidMount () {
@@ -25,10 +30,35 @@ class HistoryChart extends Component {
                 gas: res.data.gas.reverse()
             });
 
-
         }).catch(err => {
             _this.setState({data: 'ERROR'});
         });
+    }
+
+    handleModeChange (event) {
+        this.setState({mode: event.target.value});
+    }
+
+    handleWeekChange (event) {
+        this.setState({week: event.target.value});
+    }
+
+    handleLimitChange (event) {
+        this.setState({limit: event.target.value});
+    }
+
+    handleClick (event) {
+        var href = '/history?';
+        if (this.state.mode == '0' || this.state.mode == '1') {
+            href += 'mode=' + this.state.mode + '&';
+        }
+        if (this.state.week == '9' || this.state.week == '10') {
+            href += 'week=' + this.state.week + '&';
+        }
+        if (this.state.limit != 'All') {
+            href += 'limit=' + this.state.limit;
+        }
+        window.location.href = href;
     }
 
     render () {
@@ -112,6 +142,49 @@ class HistoryChart extends Component {
 
         return (
             <div>
+                <div>
+                    Mode:&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="mode" value='0' onChange={this.handleModeChange}/>Indoors
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="mode" value='1' onChange={this.handleModeChange}/>Outdoors
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="mode" value='All' onChange={this.handleModeChange}/>All
+                    </label><br />
+                </div>
+                
+                <div>
+                    Week:&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="week" value='9' onChange={this.handleWeekChange}/>Week 9
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="week" value='10' onChange={this.handleWeekChange}/>Week 10
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="week" value='All' onChange={this.handleWeekChange}/>All
+                    </label><br />
+                </div>
+
+                <div>
+                    Limit:&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="week" value='20' onChange={this.handleLimitChange}/>20
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="week" value='50' onChange={this.handleLimitChange}/>50
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="week" value='100' onChange={this.handleLimitChange}/>100
+                    </label>&nbsp;&nbsp;&nbsp;
+                    <label>
+                        <input type="radio" name="week" value='All' onChange={this.handleLimitChange}/>All
+                    </label><br />
+                </div>
+                <button onClick={this.handleClick}>Go</button>
+
                 <LineChart data={tempHumidChart} options={tempHumidOptions} width='1000' height='500' />
                 <LineChart data={co2TvocChart} options={co2TvocOptions} width='1000' height='500' />
                 <LineChart data={gasChart} options={gasOptions} width='1000' height='500'/>
