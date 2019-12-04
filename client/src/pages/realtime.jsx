@@ -23,7 +23,7 @@ class RealTimeData extends Component {
             }
             _this.setState({
                 id: res.data[0].id,
-                time: res.data[0].time,
+                time: res.data[0].time_str,
                 temp: res.data[0].temp,
                 humidity: res.data[0].humidity,
                 co2: res.data[0].co2,

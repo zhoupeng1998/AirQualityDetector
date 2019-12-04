@@ -141,7 +141,7 @@ app.get('/portal', (req, res, next) => {
 });
 
 app.get('/clean', (req, res, next) => {
-    Record.deleteMany({'tvoc': {$gte: 500}}).exec((err, entry) => {
+    Record.deleteMany({'tvoc': {$gte: 1000}}).exec((err, entry) => {
         res.json(entry);
     });
 });
