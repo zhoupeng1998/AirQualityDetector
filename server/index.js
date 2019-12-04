@@ -5,7 +5,8 @@ var bodyParser = require('body-parser');
 var Device = require('./models/device');
 var Record = require('./models/record');
 
-var url = "mongodb://localhost:27017/detector";
+//var url = "mongodb://localhost:27017/detector";
+var url = "mongodb://13.57.9.33:27017/detector"
 mongoose.connect(url, {useNewUrlParser: true});
 
 var app = express();
@@ -35,10 +36,14 @@ const getFilter = (query) => {
 
 const getAverage = (array) => {
     var sum = 0.0;
+    var count = 0;
     for (var i = 0; i < array.length; i++) {
-        sum += array[i];
+        if (array[i] != null) {
+            sum += array[i];
+            count += 1;
+        }
     }
-    return String(sum / array.length);
+    return String(sum / count);
 };
 
 app.use(bodyParser.json());
@@ -133,6 +138,12 @@ app.get('/portal', (req, res, next) => {
     });
 
     res.send(JSON.stringify(req.query));
+});
+
+app.get('/clean', (req, res, next) => {
+    Record.deleteMany({'tvoc': {$gte: 500}}).exec((err, entry) => {
+        res.json(entry);
+    });
 });
 
 app.listen(8080);
