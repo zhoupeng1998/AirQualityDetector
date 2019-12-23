@@ -11,10 +11,18 @@ The IoT Project connecting Sparkfun ESP8266 Thing Dev Board, Web Server, and Use
 - [Adafruit GPS Library for Arduino](https://learn.adafruit.com/adafruit-ultimate-gps/arduino-wiring)
 #### Web Server
 - [Node.js](https://nodejs.org/en/)
+- [MongoDB](https://www.mongodb.com)
 - pm2 ` npm install -g pm2 `
+- yarn ` npm install -g yarn `
 ### Starting the Server
 ``` 
 cd server
 npm install
 npm run deploy
+```
+### Starting Client
+```
+cd client
+yarn install
+yarn run
 ```
