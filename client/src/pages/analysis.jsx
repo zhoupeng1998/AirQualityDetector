@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {List, Label, Input, Button} from 'semantic-ui-react';
 
 class Analysis extends Component {
 
@@ -125,7 +124,7 @@ class Analysis extends Component {
                         <input type="radio" name="location" value='All' onChange={this.handleLocationChange}/>All
                     </label><br />
                 </div>
-                <Button onClick={this.handleClick}>Go</Button><br /><br />
+                <button onClick={this.handleClick}>Go</button><br /><br />
                 
                 <div class='item'>Max Temperature: {maxTemp}ºC</div >
                 <div class='item'>Min Temperature: {minTemp}ºC</div >
