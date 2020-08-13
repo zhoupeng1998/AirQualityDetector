@@ -37,12 +37,15 @@ class Analysis extends Component {
         if (this.state.mode == '0' || this.state.mode == '1') {
             href += 'mode=' + this.state.mode + '&';
         }
+        // Week (in semester), location (on/off campus) features disabled
+        /*
         if (this.state.week == '9' || this.state.week == '10') {
             href += 'week=' + this.state.week + '&';
         }
         if (this.state.location != 'All') {
             href += 'location=' + this.state.location + '&';
         }
+        */
         window.location.href = href;
     }
 
@@ -98,7 +101,9 @@ class Analysis extends Component {
                         <input type="radio" name="mode" value='All' onChange={this.handleModeChange}/>All
                     </label><br />
                 </div>
-                
+
+                {/*
+                // Week (in semester), location (on/off campus) features disabled
                 <div>
                     Week:&nbsp;&nbsp;&nbsp;
                     <label>
@@ -123,7 +128,8 @@ class Analysis extends Component {
                     <label>
                         <input type="radio" name="location" value='All' onChange={this.handleLocationChange}/>All
                     </label><br />
-                </div>
+                </div>             
+                */}
                 <button onClick={this.handleClick}>Go</button><br /><br />
                 
                 <div class='item'>Max Temperature: {maxTemp}ºC</div >

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node index.js",
-    "deploy": "pm2 start index.js",
+    "deploy": "pm2 start index.js --name 'server'",
     "stop": "pm2 stop index"
   },
   "author": "Peng Zhou, Songheng Zhang",

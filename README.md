@@ -26,3 +26,9 @@ cd client
 yarn install
 yarn run
 ```
+
+### Generate Sample Data
+```
+python3 -m pip install requests
+python3 TestAirServer.py
+```
