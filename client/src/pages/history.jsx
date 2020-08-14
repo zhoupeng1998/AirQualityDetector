@@ -153,14 +153,6 @@ class HistoryChart extends Component {
 
         return (
             <div>
-
-                <div>
-                    <a href='/'>Home</a>&nbsp;&nbsp;
-                    <a href='/history'>Plot</a>&nbsp;&nbsp;
-                    <a href='/realtime'>Realtime</a>&nbsp;&nbsp;
-                    <a href='/analysis'>Analysis</a><br /><br />
-                </div>
-
                 <div>
                     Mode:&nbsp;&nbsp;&nbsp;
                     <label>

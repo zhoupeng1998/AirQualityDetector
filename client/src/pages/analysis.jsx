@@ -83,13 +83,6 @@ class Analysis extends Component {
         return (
             <div class='ui list'>
                 <div>
-                    <a href='/'>Home</a>&nbsp;&nbsp;
-                    <a href='/history'>Plot</a>&nbsp;&nbsp;
-                    <a href='/realtime'>Realtime</a>&nbsp;&nbsp;
-                    <a href='/analysis'>Analysis</a><br /><br />
-                </div>
-
-                <div>
                     Mode:&nbsp;&nbsp;&nbsp;
                     <label>
                         <input type="radio" name="mode" value='0' onChange={this.handleModeChange}/>Indoors
